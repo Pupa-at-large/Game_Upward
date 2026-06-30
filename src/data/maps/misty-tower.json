@@ -1,8 +1,15 @@
 {
   "id": "misty-tower",
   "name": "晨雾塔",
-  "tagline": "雾起处，旅程开始的地方。",
-  "theme": { "fog": "#6B8CAE", "ambient": "#8B7FA8", "accent": "#C4CDD6" },
+  "tagline": "雾起之处，唯有向上。",
+  "theme": {
+    "skyBottom": "#2a3340",
+    "skyTop": "#6b8cae",
+    "platformTop": "#cdd3da",
+    "platformSide": "#8b95a3",
+    "accent": "#e8b86d",
+    "silhouette": "#3a4656"
+  },
   "unlockCondition": null,
   "segments": [
     {
@@ -12,14 +19,15 @@
       "bufferPlatformY": 0,
       "boundaryY": 30,
       "platforms": [
-        { "type": "static", "pos": [0, 0, 0], "size": [8, 0.5, 8] },
-        { "type": "static", "pos": [0, 3, -3], "size": [3, 0.5, 3] },
-        { "type": "static", "pos": [3.5, 6, -1], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [-1, 9, 1], "size": [2.5, 0.5, 2.5] },
-        { "type": "moving", "pos": [-3, 13, -1], "size": [2.5, 0.5, 2.5], "axis": "x", "range": 4, "speed": 1.2 },
-        { "type": "static", "pos": [1, 17, -2], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [4, 21, 0], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [1, 25, 2], "size": [3, 0.5, 3] }
+        { "type": "static", "pos": [0, 0], "size": [14, 1] },
+        { "type": "static", "pos": [-2, 3.2], "size": [2.6, 0.6] },
+        { "type": "static", "pos": [2.2, 6.6], "size": [2.4, 0.6] },
+        { "type": "static", "pos": [-2.5, 10], "size": [2.4, 0.6] },
+        { "type": "moving", "pos": [0, 13.6], "size": [2.4, 0.6], "axis": "x", "range": 5, "speed": 1.2 },
+        { "type": "static", "pos": [3, 17.2], "size": [2.2, 0.6] },
+        { "type": "static", "pos": [-1.2, 20.8], "size": [2.2, 0.6] },
+        { "type": "static", "pos": [2.4, 24.2], "size": [2.2, 0.6] },
+        { "type": "static", "pos": [0, 27.6], "size": [3.2, 0.6] }
       ]
     },
     {
@@ -29,13 +37,14 @@
       "bufferPlatformY": 30,
       "boundaryY": 60,
       "platforms": [
-        { "type": "static", "pos": [1, 30, 2], "size": [4, 0.5, 4] },
-        { "type": "static", "pos": [-2, 34, 0], "size": [2.5, 0.5, 2.5] },
-        { "type": "moving", "pos": [2, 38, -1], "size": [2.5, 0.5, 2.5], "axis": "z", "range": 5, "speed": 1.5 },
-        { "type": "static", "pos": [-2, 43, -2], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [2, 47, 0], "size": [2, 0.5, 2] },
-        { "type": "moving", "pos": [-1, 51, 1], "size": [2.5, 0.5, 2.5], "axis": "x", "range": 5, "speed": 1.8 },
-        { "type": "static", "pos": [2, 56, 2], "size": [3, 0.5, 3] }
+        { "type": "static", "pos": [0, 30], "size": [5, 1] },
+        { "type": "static", "pos": [-3, 33.6], "size": [2.2, 0.6] },
+        { "type": "static", "pos": [1.6, 37.2], "size": [2.2, 0.6] },
+        { "type": "moving", "pos": [-1, 41], "size": [2.2, 0.6], "axis": "x", "range": 5.5, "speed": 1.5 },
+        { "type": "static", "pos": [3, 44.8], "size": [2, 0.6] },
+        { "type": "static", "pos": [-2.2, 48.4], "size": [2, 0.6] },
+        { "type": "static", "pos": [1.6, 52], "size": [2, 0.6] },
+        { "type": "static", "pos": [-1, 56], "size": [3, 0.6] }
       ]
     },
     {
@@ -45,16 +54,17 @@
       "bufferPlatformY": 60,
       "boundaryY": 90,
       "platforms": [
-        { "type": "static", "pos": [2, 60, 2], "size": [4, 0.5, 4] },
-        { "type": "static", "pos": [-1, 64, 0], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [3, 68, -2], "size": [2.5, 0.5, 2.5] },
-        { "type": "moving", "pos": [0, 73, -1], "size": [2.5, 0.5, 2.5], "axis": "x", "range": 6, "speed": 2 },
-        { "type": "static", "pos": [-3, 78, 1], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [1, 83, 0], "size": [2.5, 0.5, 2.5] },
-        { "type": "static", "pos": [0, 88, 0], "size": [5, 0.5, 5] }
+        { "type": "static", "pos": [0, 60], "size": [5, 1] },
+        { "type": "static", "pos": [3, 63.6], "size": [2.2, 0.6] },
+        { "type": "static", "pos": [-2, 67.2], "size": [2.2, 0.6] },
+        { "type": "moving", "pos": [1, 71], "size": [2.2, 0.6], "axis": "x", "range": 6, "speed": 1.8 },
+        { "type": "static", "pos": [-3, 75], "size": [2, 0.6] },
+        { "type": "static", "pos": [2, 79], "size": [2, 0.6] },
+        { "type": "static", "pos": [-1, 83], "size": [2.2, 0.6] },
+        { "type": "static", "pos": [0, 88], "size": [4.5, 0.8] }
       ]
     }
   ],
   "summitY": 90,
-  "starCores": [{ "pos": [5, 45, 3] }, { "pos": [-3, 70, 1] }]
+  "starCores": [{ "pos": [4, 44] }, { "pos": [-3, 70] }]
 }

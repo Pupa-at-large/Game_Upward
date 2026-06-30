@@ -1,42 +1,43 @@
 /**
- * 核心手感参数集中调参区。
- * 所有影响跳跃/移动/相机手感的数值都放这里，方便反复微调。
- * 改这里的值无需改逻辑代码。
+ * 2D 攀爬·核心手感参数集中调参区。单位：米、秒、米/秒。
+ * 改这里即可实时微调跳跃弧线、移动、抓握、相机。
  */
 export const TUNING = {
-  // ── 重力与基础物理 ──────────────────────────────
-  gravity: -20, // m/s^2，比真实重力大，手感更利落
-  playerMass: 1,
-  airDrag: 0.02,
+  // ── 重力与基础 ──────────────────────────────────
+  gravity: 22, // m/s^2（向下为正，在 Player 中取负应用）；偏大更利落
+  terminalVy: 24, // 最大下落速度（限制手感）
 
   // ── 蓄力跳跃 ────────────────────────────────────
+  // 满蓄力垂直起跳 vy 决定最大跳高 ≈ vy^2 / (2g)。
+  // 当前：vy=16 → 约 5.8m；vy=8(轻点) → 约 1.5m。
   jumpChargeMin: 0.05, // 秒，最短蓄力（轻点）
-  jumpChargeMax: 1.0, // 秒，满蓄力时长
-  jumpForceMin: 6, // 最短蓄力起跳垂直速度
-  jumpForceMax: 14, // 满蓄力起跳垂直速度
-  jumpHorizontalRatio: 0.7, // 水平方向跳跃力占比（朝向输入方向）
+  jumpChargeMax: 0.9, // 秒，满蓄力时长
+  jumpVyMin: 8, // 最短蓄力垂直起跳速度
+  jumpVyMax: 16, // 满蓄力垂直起跳速度
+  jumpVxMax: 9, // 满蓄力时朝瞄准方向的水平速度
+  jumpVxMin: 4, // 轻点时水平速度
 
-  // ── 冲量保留（speedrun 关键）───────────────────
-  landingMomentumKeep: 0.6, // 落地保留的水平速度比例
-  moveSpeed: 5, // 地面水平移动速度
-  groundControl: 0.25, // 地面响应（0-1，越大越跟手；相对移动平台计算）
-  groundFriction: 0.4, // 无输入时地面减速比例（每帧），代码层"摩擦"
-  airControl: 0.3, // 空中水平控制力度（0-1）
+  // ── 移动与冲量 ──────────────────────────────────
+  moveSpeed: 6, // 地面水平移动速度
+  groundAccel: 0.3, // 地面控制响应 0-1
+  groundFriction: 0.5, // 无输入时每帧水平衰减
+  airControl: 0.12, // 空中水平微调（小！蓄力跳定生死，这是核心难度）
+  landingMomentumKeep: 0.5, // 落地保留水平速度比例（连跳累积）
 
   // ── 抓握 ────────────────────────────────────────
-  grabReach: 0.8, // 米，可抓住边缘的水平距离
-  grabWindow: 0.3, // 秒，接触边缘后可抓住的时间窗
-  grabHangDuration: 1.5, // 秒，最长悬挂时间
-  grabPullUpForce: 8, // 翻上平台的垂直力
+  grabReach: 0.5, // 米，贴边可抓的水平距离
+  grabWindow: 0.35, // 秒，离地后仍可抓的时间窗
+  grabHangDuration: 1.6, // 秒，最长悬挂
+  grabPullUpVy: 11, // 翻上平台的垂直速度
 
   // ── 相机 ────────────────────────────────────────
-  cameraFollowLerp: 0.1, // 跟随平滑系数
-  cameraDistance: 8,
-  cameraHeight: 2,
+  pxPerMeter: 46, // 渲染缩放：1 米 = 多少像素
+  cameraFollowLerp: 0.12, // 垂直跟随平滑
+  cameraLookAheadUp: 2.2, // 视线略偏上，给上方留出预判空间（米）
 
   // ── 玩家体型 ────────────────────────────────────
-  playerRadius: 0.4,
-  playerHeight: 1.2, // 胶囊总高（视觉用）
+  playerW: 0.7,
+  playerH: 1.1,
 };
 
 export type Tuning = typeof TUNING;

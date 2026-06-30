@@ -1,5 +1,6 @@
 /**
- * 地图数据结构定义（与 data/maps/*.json 对应）。
+ * 2D 地图数据结构（侧视攀爬）。坐标单位为「米」，y 轴向上。
+ * 渲染时由 Camera2D 做世界→屏幕变换。
  */
 
 export type PlatformType =
@@ -12,10 +13,10 @@ export type PlatformType =
 
 export interface PlatformDef {
   type: PlatformType;
-  pos: [number, number, number];
-  size: [number, number, number];
+  pos: [number, number]; // 中心 [x, y]
+  size: [number, number]; // [宽, 高]
   // moving
-  axis?: 'x' | 'y' | 'z';
+  axis?: 'x' | 'y';
   range?: number;
   speed?: number;
   // fading
@@ -24,9 +25,9 @@ export interface PlatformDef {
   // bouncer
   bounceForce?: number;
   // wind
-  direction?: [number, number, number];
+  direction?: [number, number];
   strength?: number;
-  // gear
+  // gear（2D：以中心为轴旋转的几何条）
   radius?: number;
   rotSpeed?: number;
 }
@@ -41,13 +42,20 @@ export interface SegmentDef {
 }
 
 export interface StarCoreDef {
-  pos: [number, number, number];
+  pos: [number, number];
 }
 
 export interface MapTheme {
-  fog: string;
-  ambient: string;
+  /** 天空渐变：底部（较冷/暗）→ 顶部（较暖/亮）。 */
+  skyBottom: string;
+  skyTop: string;
+  /** 平台主色（顶面）与厚度面。 */
+  platformTop: string;
+  platformSide: string;
+  /** 强调色（光点、游标、星核辉光）。 */
   accent: string;
+  /** 远景塔剪影色。 */
+  silhouette: string;
 }
 
 export interface MapDef {

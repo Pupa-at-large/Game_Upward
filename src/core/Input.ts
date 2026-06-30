@@ -1,23 +1,18 @@
 /**
- * 输入管理：键盘（WASD/方向）、空格蓄力、触控。
- * 提供方向向量与蓄力状态查询，逻辑层只读这里，不直接碰 DOM 事件。
+ * 输入管理（2D）：水平方向（A/D、←/→）+ 空格蓄力 + 触控。
+ * 逻辑层只读这里，不直接碰 DOM 事件。
  */
-export interface MoveAxis {
-  x: number; // -1 左 / +1 右
-  z: number; // -1 前(远离相机) / +1 后(靠近相机)
-}
-
 export class Input {
   private keys = new Set<string>();
 
-  // 蓄力状态
   private charging = false;
   private chargeStart = 0;
-  private jumpReleasedThisFrame = false;
-  private now = 0; // 由 update(dt) 推进的内部时钟（秒）
+  private jumpReleased = false;
+  private releasedCharge = 0; // 松开瞬间锁存的蓄力时长（秒）
+  private now = 0;
 
   // 触控
-  private touchMove: MoveAxis = { x: 0, z: 0 };
+  private touchDir = 0; // -1 / 0 / +1
   private touchCharging = false;
 
   constructor() {
@@ -26,49 +21,41 @@ export class Input {
     this.setupTouch();
   }
 
-  /** 每帧推进内部时钟，并清理一次性标志。注意：必须在逻辑读取之后调用 endFrame。 */
   update(dt: number) {
     this.now += dt;
   }
 
   endFrame() {
-    this.jumpReleasedThisFrame = false;
+    this.jumpReleased = false;
   }
 
-  get moveAxis(): MoveAxis {
+  /** 水平方向 -1 / 0 / +1。 */
+  get moveX(): number {
     let x = 0;
-    let z = 0;
     if (this.keys.has('KeyA') || this.keys.has('ArrowLeft')) x -= 1;
     if (this.keys.has('KeyD') || this.keys.has('ArrowRight')) x += 1;
-    if (this.keys.has('KeyW') || this.keys.has('ArrowUp')) z -= 1;
-    if (this.keys.has('KeyS') || this.keys.has('ArrowDown')) z += 1;
-    x += this.touchMove.x;
-    z += this.touchMove.z;
-    // 归一化避免斜向超速
-    const len = Math.hypot(x, z);
-    if (len > 1) {
-      x /= len;
-      z /= len;
-    }
-    return { x, z };
+    x += this.touchDir;
+    return Math.max(-1, Math.min(1, x));
   }
 
   get isCharging(): boolean {
     return this.charging;
   }
 
-  /** 当前蓄力已持续秒数（未蓄力为 0）。 */
   get chargeTime(): number {
     return this.charging ? this.now - this.chargeStart : 0;
   }
 
-  /** 本帧是否松开了跳跃键（消费一次性）。 */
-  consumeJumpRelease(): boolean {
-    if (this.jumpReleasedThisFrame) {
-      this.jumpReleasedThisFrame = false;
-      return true;
+  /**
+   * 若本帧松开了跳跃键，返回松开瞬间锁存的蓄力时长（秒）；否则返回 null。
+   * 必须用这个返回值计算跳跃力——松开后 charging 已置否，chargeTime 会归零。
+   */
+  consumeJumpRelease(): number | null {
+    if (this.jumpReleased) {
+      this.jumpReleased = false;
+      return this.releasedCharge;
     }
-    return false;
+    return null;
   }
 
   private beginCharge() {
@@ -80,8 +67,9 @@ export class Input {
 
   private endCharge() {
     if (this.charging) {
+      this.releasedCharge = this.now - this.chargeStart;
       this.charging = false;
-      this.jumpReleasedThisFrame = true;
+      this.jumpReleased = true;
     }
   }
 
@@ -96,54 +84,32 @@ export class Input {
 
   private onKeyUp = (e: KeyboardEvent) => {
     this.keys.delete(e.code);
-    if (e.code === 'Space') {
-      this.endCharge();
-    }
+    if (e.code === 'Space') this.endCharge();
   };
 
   private setupTouch() {
-    // 左半屏：虚拟摇杆方向；右半屏：按住蓄力，松开起跳。
-    let joyStartX = 0;
-    let joyStartY = 0;
-    let joyId = -1;
-
+    // 左半屏点按：左移；右半屏按住：蓄力，松开起跳。瞄准方向用左半屏左右点。
     const onStart = (e: TouchEvent) => {
       for (const t of Array.from(e.changedTouches)) {
         if (t.clientX < window.innerWidth / 2) {
-          joyId = t.identifier;
-          joyStartX = t.clientX;
-          joyStartY = t.clientY;
+          this.touchDir = t.clientX < window.innerWidth / 4 ? -1 : 1;
         } else {
           this.touchCharging = true;
           this.beginCharge();
         }
       }
     };
-    const onMove = (e: TouchEvent) => {
-      for (const t of Array.from(e.changedTouches)) {
-        if (t.identifier === joyId) {
-          const dx = (t.clientX - joyStartX) / 60;
-          const dy = (t.clientY - joyStartY) / 60;
-          this.touchMove.x = Math.max(-1, Math.min(1, dx));
-          this.touchMove.z = Math.max(-1, Math.min(1, dy));
-        }
-      }
-    };
     const onEnd = (e: TouchEvent) => {
       for (const t of Array.from(e.changedTouches)) {
-        if (t.identifier === joyId) {
-          joyId = -1;
-          this.touchMove.x = 0;
-          this.touchMove.z = 0;
-        } else if (t.clientX >= window.innerWidth / 2 && this.touchCharging) {
+        if (t.clientX < window.innerWidth / 2) {
+          this.touchDir = 0;
+        } else if (this.touchCharging) {
           this.touchCharging = false;
           this.endCharge();
         }
       }
     };
-
-    window.addEventListener('touchstart', onStart, { passive: false });
-    window.addEventListener('touchmove', onMove, { passive: false });
+    window.addEventListener('touchstart', onStart, { passive: true });
     window.addEventListener('touchend', onEnd);
     window.addEventListener('touchcancel', onEnd);
   }
