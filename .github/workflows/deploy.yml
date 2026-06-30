@@ -1,0 +1,36 @@
+name: Deploy to GitHub Pages
+
+# 推送到开发分支即自动构建并发布到 gh-pages 分支。
+# 启用方法（一次性）：仓库 Settings → Pages → Build and deployment →
+#   Source 选 "Deploy from a branch" → 分支选 gh-pages，目录 / (root) → Save。
+# 几十秒后访问： https://pupa-at-large.github.io/game_upward/
+on:
+  push:
+    branches:
+      - claude/dev-session-522okd
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Publish to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          force_orphan: true
