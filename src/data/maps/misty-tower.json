@@ -1,0 +1,60 @@
+{
+  "id": "misty-tower",
+  "name": "晨雾塔",
+  "tagline": "雾起处，旅程开始的地方。",
+  "theme": { "fog": "#6B8CAE", "ambient": "#8B7FA8", "accent": "#C4CDD6" },
+  "unlockCondition": null,
+  "segments": [
+    {
+      "id": "seg-1",
+      "name": "塔基",
+      "startY": 0,
+      "bufferPlatformY": 0,
+      "boundaryY": 30,
+      "platforms": [
+        { "type": "static", "pos": [0, 0, 0], "size": [8, 0.5, 8] },
+        { "type": "static", "pos": [0, 3, -3], "size": [3, 0.5, 3] },
+        { "type": "static", "pos": [3.5, 6, -1], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [-1, 9, 1], "size": [2.5, 0.5, 2.5] },
+        { "type": "moving", "pos": [-3, 13, -1], "size": [2.5, 0.5, 2.5], "axis": "x", "range": 4, "speed": 1.2 },
+        { "type": "static", "pos": [1, 17, -2], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [4, 21, 0], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [1, 25, 2], "size": [3, 0.5, 3] }
+      ]
+    },
+    {
+      "id": "seg-2",
+      "name": "雾桥",
+      "startY": 30,
+      "bufferPlatformY": 30,
+      "boundaryY": 60,
+      "platforms": [
+        { "type": "static", "pos": [1, 30, 2], "size": [4, 0.5, 4] },
+        { "type": "static", "pos": [-2, 34, 0], "size": [2.5, 0.5, 2.5] },
+        { "type": "moving", "pos": [2, 38, -1], "size": [2.5, 0.5, 2.5], "axis": "z", "range": 5, "speed": 1.5 },
+        { "type": "static", "pos": [-2, 43, -2], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [2, 47, 0], "size": [2, 0.5, 2] },
+        { "type": "moving", "pos": [-1, 51, 1], "size": [2.5, 0.5, 2.5], "axis": "x", "range": 5, "speed": 1.8 },
+        { "type": "static", "pos": [2, 56, 2], "size": [3, 0.5, 3] }
+      ]
+    },
+    {
+      "id": "seg-3",
+      "name": "雾顶",
+      "startY": 60,
+      "bufferPlatformY": 60,
+      "boundaryY": 90,
+      "platforms": [
+        { "type": "static", "pos": [2, 60, 2], "size": [4, 0.5, 4] },
+        { "type": "static", "pos": [-1, 64, 0], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [3, 68, -2], "size": [2.5, 0.5, 2.5] },
+        { "type": "moving", "pos": [0, 73, -1], "size": [2.5, 0.5, 2.5], "axis": "x", "range": 6, "speed": 2 },
+        { "type": "static", "pos": [-3, 78, 1], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [1, 83, 0], "size": [2.5, 0.5, 2.5] },
+        { "type": "static", "pos": [0, 88, 0], "size": [5, 0.5, 5] }
+      ]
+    }
+  ],
+  "summitY": 90,
+  "starCores": [{ "pos": [5, 45, 3] }, { "pos": [-3, 70, 1] }]
+}
