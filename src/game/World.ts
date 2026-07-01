@@ -72,11 +72,19 @@ export class Platform {
   /** 当前是否可碰撞（消失态不可踩）。 */
   get solid() { return this.state !== 'gone'; }
 
-  /** 玩家踩上 fading 台时调用，触发渐隐倒计时。 */
+  /** 玩家踩上 fading / 正念踏石时调用，触发渐隐倒计时。 */
   touch() {
     if (this.type === 'fading' && this.state === 'solid') {
       this.state = 'fading';
       this.fadeTimer = this.fadeDelay;
+    }
+  }
+
+  /** 正念踏石：正心落点让它稳住不再消隐（撤销本次渐隐）。 */
+  reassure() {
+    if (this.type === 'fading' && this.state === 'fading') {
+      this.state = 'solid';
+      this.alpha = 1;
     }
   }
 

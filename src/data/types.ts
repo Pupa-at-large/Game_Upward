@@ -67,4 +67,6 @@ export interface MapDef {
   segments: SegmentDef[];
   summitY: number;
   starCores: StarCoreDef[];
+  /** 卸下负累时依次浮现的放下短诗（可选）。 */
+  poems?: string[];
 }

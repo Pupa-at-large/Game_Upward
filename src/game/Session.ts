@@ -8,7 +8,10 @@ import { Renderer } from '../render/Renderer';
 import { ProgressSystem } from '../systems/ProgressSystem';
 import { SaveSystem } from '../systems/SaveSystem';
 import { HUD } from '../ui/HUD';
+import { Audio } from '../core/Audio';
 import type { MapDef } from '../data/types';
+
+const DEFAULT_POEMS = ['放下 昨日的回声', '放下 山影', '放下 名字', '放下 重量'];
 
 export interface RunStats {
   mapId: string;
@@ -31,6 +34,8 @@ export class Session {
   private progress: ProgressSystem;
   private renderer: Renderer;
   private hud: HUD;
+  private audio = new Audio();
+  private poems: string[];
   private t = 0;
   private done = false;
 
@@ -51,6 +56,19 @@ export class Session {
     this.cam.resize(engine.width, engine.height);
     this.cam.follow(this.player.x, this.player.y, true);
 
+    // 放下 · 轻盈的反馈挂接
+    this.poems = map.poems && map.poems.length ? map.poems : DEFAULT_POEMS;
+    this.player.onPerfect = (combo) => this.audio.perfect(combo);
+    this.player.onShed = (i) => this.hud.showPoem(this.poems[i % this.poems.length]);
+    this.player.onSink = () => {
+      this.audio.sink();
+      this.hud.flashFall();
+    };
+    // 首次手势解锁音频（浏览器自动播放策略）
+    const unlock = () => this.audio.unlock();
+    window.addEventListener('keydown', unlock, { once: true });
+    window.addEventListener('pointerdown', unlock, { once: true });
+
     (window as unknown as Record<string, unknown>).__upward = {
       player: this.player,
       progress: this.progress,
@@ -70,8 +88,7 @@ export class Session {
       this.player.update(dt);
 
       if (this.fall.update()) {
-        this.progress.registerFall();
-        this.hud.flashFall();
+        this.progress.registerFall(); // 反馈（音效+泛冷）由 player.onSink 触发
       }
       for (const s of this.world.stars) {
         if (!s.collected && Math.hypot(this.player.x - s.x, this.player.y - s.y) < 1.2) {

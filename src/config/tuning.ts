@@ -38,6 +38,19 @@ export const TUNING = {
   // ── 玩家体型 ────────────────────────────────────
   playerW: 0.7,
   playerH: 1.1,
+
+  // ── 放下 · 轻盈度（核心变量）────────────────────
+  weightStart: 0.9, // 进塔初始负累 w∈[0,1]
+  weightMin: 0.08, // 该塔可达最轻
+  shedPerPerfect: 0.06, // 每次正心落点卸下的负累
+  sinkWeightPenalty: 0.05, // 柔性下沉时加重
+  // 有效重力 = gravity × (gravLo + gravHi·w)：越轻重力越小 → 越高越飘
+  gravLo: 0.6,
+  gravHi: 0.4,
+  floatFactor: 0.55, // 轻且接近弧顶时的额外重力衰减（悬停感）
+  floatWeightBelow: 0.45, // w 低于此值才有悬停
+  sweetSpot: 0.35, // 正心甜区 = ±35% 半宽
+  burdenCount: 4, // 负累件数（跟随的小几何暗影）
 };
 
 export type Tuning = typeof TUNING;

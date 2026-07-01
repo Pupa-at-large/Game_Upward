@@ -14,6 +14,8 @@ export class HUD {
   private chargeWrap: HTMLDivElement;
   private chargeFill: HTMLDivElement;
   private vignette: HTMLDivElement;
+  private poem!: HTMLDivElement;
+  private poemTimer = 0;
 
   private lastH = 0;
   private flash = 0;
@@ -67,13 +69,30 @@ export class HUD {
     this.chargeWrap.appendChild(this.chargeFill);
     this.root.appendChild(this.chargeWrap);
 
-    // 坠落泛红
+    // 下沉反馈：柔和冷调（放下 = 不惩罚，只是"沉"了一下）
     this.vignette = document.createElement('div');
     this.vignette.style.cssText = `position:absolute;inset:0;opacity:0;transition:opacity .25s;
-      box-shadow:inset 0 0 170px 50px rgba(180,50,45,.55);`;
+      box-shadow:inset 0 0 200px 60px rgba(70,100,140,.5);`;
     this.root.appendChild(this.vignette);
 
+    // 放下短诗
+    this.poem = document.createElement('div');
+    this.poem.style.cssText = `position:absolute;left:50%;top:38%;transform:translate(-50%,-50%);
+      font-family:'Cormorant Garamond',serif;font-size:34px;letter-spacing:6px;color:#fffcf5;
+      opacity:0;transition:opacity 1.2s;text-shadow:0 2px 30px rgba(232,184,109,.6);text-align:center;`;
+    this.root.appendChild(this.poem);
+
     document.body.appendChild(this.root);
+  }
+
+  /** 卸下负累时浮现一句放下短诗，淡入后自动淡出。 */
+  showPoem(text: string) {
+    this.poem.textContent = text;
+    this.poem.style.opacity = '1';
+    window.clearTimeout(this.poemTimer);
+    this.poemTimer = window.setTimeout(() => {
+      this.poem.style.opacity = '0';
+    }, 2600);
   }
 
   flashFall() {

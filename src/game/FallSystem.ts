@@ -4,10 +4,8 @@ import { Player } from './Player';
 import { World } from './World';
 
 /**
- * 坠落与区段重置 —— 惩罚模型核心（2D）。
- *  - 软惩罚：在已到达的最高区段内坠落 → 传回该段缓冲台。
- *  - 硬惩罚：掉出该区段下边界 → 传回该段起点。
- * 无传统存档点；进度仅用于 UI / 解锁。
+ * 柔性下沉（放下的惩罚模型）。没够到 → 沉回上一歇脚 + 略加重 + 断连击，绝不硬重开。
+ * 仍追踪玩家到达的最高区段，供进度 / HUD 显示。
  */
 export class FallSystem {
   private reached = 0;
@@ -28,29 +26,17 @@ export class FallSystem {
     return 0;
   }
 
-  /** @returns 是否触发了重置（供 HUD 泛红）。 */
+  /** @returns 是否触发了下沉（供 HUD 反馈）。 */
   update(): boolean {
     const y = this.player.y;
     const cur = this.indexAt(y);
     if (this.player.isGrounded && cur > this.reached) this.reached = cur;
 
-    const seg = this.segs[this.reached];
-
-    if (y < seg.startY - CONST.FALL_RESET_MARGIN) {
-      this.reset(seg.startY);
-      return true;
-    }
-    if (y < seg.bufferPlatformY - CONST.FALL_RESET_MARGIN) {
-      this.reset(seg.bufferPlatformY);
+    // 明显跌落到上一歇脚之下 → 柔性下沉
+    if (!this.player.isGrounded && y < this.player.restY - CONST.FALL_RESET_MARGIN) {
+      this.player.sink();
       return true;
     }
     return false;
-  }
-
-  private reset(y: number) {
-    const seg = this.segs[this.reached];
-    const p0 = seg.platforms[0];
-    const x = p0 ? p0.pos[0] : 0;
-    this.player.teleport(x, y + 1.5);
   }
 }

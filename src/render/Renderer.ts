@@ -47,8 +47,49 @@ export class Renderer {
       else this.drawPlatform(ctx, cam, p);
     }
     this.drawStars(ctx, cam, world, t);
+    this.drawBursts(ctx, cam, player);
     this.drawAim(ctx, cam, player);
-    this.drawPlayer(ctx, cam, player);
+    this.drawTrail(ctx, cam, player);
+    this.drawPlayer(ctx, cam, player, t);
+  }
+
+  // ── 正心落点光爆 ────────────────────────────────
+  private drawBursts(ctx: CanvasRenderingContext2D, cam: Camera2D, player: Player) {
+    for (const b of player.bursts) {
+      const k = b.age / b.life; // 0→1
+      const x = cam.sx(b.x);
+      const y = cam.sy(b.y);
+      const R = (b.strong ? 34 : 18) * (0.4 + k);
+      const a = (1 - k) * (b.strong ? 0.8 : 0.4);
+      ctx.strokeStyle = rgba('#fffcf5', a);
+      ctx.lineWidth = b.strong ? 2.5 : 1.5;
+      ctx.beginPath();
+      ctx.arc(x, y, R, 0, Math.PI * 2);
+      ctx.stroke();
+      if (b.strong) {
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, R * 1.3);
+        glow.addColorStop(0, rgba(this.theme.accent, a * 0.5));
+        glow.addColorStop(1, rgba(this.theme.accent, 0));
+        ctx.fillStyle = glow;
+        ctx.fillRect(x - R * 1.3, y - R * 1.3, R * 2.6, R * 2.6);
+      }
+    }
+  }
+
+  // ── 拖尾（越轻越明显）───────────────────────────
+  private drawTrail(ctx: CanvasRenderingContext2D, cam: Camera2D, player: Player) {
+    const L = player.lightness;
+    if (L < 0.05 || player.trail.length < 2) return;
+    for (let i = 0; i < player.trail.length; i++) {
+      const p = player.trail[i];
+      const k = i / player.trail.length; // 越新越亮
+      const a = k * L * 0.5;
+      if (a < 0.02) continue;
+      ctx.fillStyle = rgba('#fffcf5', a);
+      ctx.beginPath();
+      ctx.arc(cam.sx(p.x), cam.sy(p.y), 2 + k * 3 * L, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
 
   // ── 天空：底冷顶暖渐变 + 顶部暖光 ────────────────
@@ -285,7 +326,7 @@ export class Renderer {
     const aim = player.aimPreview;
     if (!aim) return;
     ctx.fillStyle = rgba(this.theme.accent, 0.7);
-    const g = TUNING.gravity;
+    const g = aim.g; // 用有效重力，弧线即承诺（随轻盈度变化）
     for (let i = 1; i <= 22; i++) {
       const dt = i * 0.05;
       const wx = player.x + aim.vx * dt;
@@ -302,27 +343,52 @@ export class Renderer {
     ctx.globalAlpha = 1;
   }
 
-  // ── 玩家 ────────────────────────────────────────
-  private drawPlayer(ctx: CanvasRenderingContext2D, cam: Camera2D, player: Player) {
+  // ── 玩家（含负累暗影 + 轻盈光晕）────────────────
+  private drawPlayer(ctx: CanvasRenderingContext2D, cam: Camera2D, player: Player, t: number) {
     const squat = player.squat;
     const wpx = player.w * cam.scale * (1 + squat * 0.22);
     const hpx = player.h * cam.scale * (1 - squat * 0.28);
     const cx = cam.sx(player.x);
     const footY = cam.sy(player.bottom);
     const topY = footY - hpx;
+    const L = player.lightness;
 
-    // 接触阴影
-    ctx.fillStyle = rgba('#0a0a12', 0.22);
+    // 负累：跟随的小几何暗影（越重越多），在身后微微浮动
+    for (let i = 0; i < player.burdens; i++) {
+      const a = 1 + i;
+      const bx = cx - player.facing * (12 + a * 9) + Math.sin(t * 1.3 + i) * 3;
+      const by = topY + hpx * 0.5 + Math.cos(t * 1.1 + i * 1.7) * 5 + i * 4;
+      ctx.fillStyle = rgba(this.theme.skyBottom, 0.55);
+      ctx.save();
+      ctx.translate(bx, by);
+      ctx.rotate(t * 0.4 + i);
+      const s = 7 - i * 0.6;
+      ctx.fillRect(-s / 2, -s / 2, s, s);
+      ctx.restore();
+    }
+
+    // 轻盈光晕（越轻越大越亮）
+    if (L > 0.05) {
+      const R = wpx * (0.7 + L * 1.6);
+      const glow = ctx.createRadialGradient(cx, topY + hpx * 0.5, 0, cx, topY + hpx * 0.5, R);
+      glow.addColorStop(0, rgba('#fff6e0', L * 0.5));
+      glow.addColorStop(1, rgba('#fff6e0', 0));
+      ctx.fillStyle = glow;
+      ctx.fillRect(cx - R, topY + hpx * 0.5 - R, R * 2, R * 2);
+    }
+
+    // 接触阴影（越轻越淡）
+    ctx.fillStyle = rgba('#0a0a12', 0.22 * (1 - L * 0.7));
     ctx.beginPath();
     ctx.ellipse(cx, footY + 2, wpx * 0.55, 4, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // 身体（奶白胶囊 + 轮廓光）
+    // 身体（奶白胶囊 + 轮廓光，越轻轮廓越亮）
     ctx.fillStyle = '#fffcf5';
     this.roundRect(ctx, cx - wpx / 2, topY, wpx, hpx, wpx * 0.45);
     ctx.fill();
-    ctx.strokeStyle = rgba(this.theme.accent, 0.85);
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = rgba(mix(this.theme.accent, '#fffef8', L), 0.7 + L * 0.3);
+    ctx.lineWidth = 2 + L * 1.5;
     this.roundRect(ctx, cx - wpx / 2, topY, wpx, hpx, wpx * 0.45);
     ctx.stroke();
 
