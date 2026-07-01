@@ -41,7 +41,11 @@ export class Renderer {
     this.drawSilhouettes(ctx, cam, w, h);
     this.drawMotes(ctx, cam, t, w, h);
 
-    for (const p of world.platforms) this.drawPlatform(ctx, cam, p);
+    for (const p of world.platforms) {
+      if (p.type === 'wind') this.drawWind(ctx, cam, p, t);
+      else if (p.type === 'gear') this.drawGear(ctx, cam, p);
+      else this.drawPlatform(ctx, cam, p);
+    }
     this.drawStars(ctx, cam, world, t);
     this.drawAim(ctx, cam, player);
     this.drawPlayer(ctx, cam, player);
@@ -193,6 +197,67 @@ export class Renderer {
       ctx.stroke();
     }
     ctx.restore();
+  }
+
+  // ── 风力区（半透明区域 + 流线，暗示风向）────────
+  private drawWind(ctx: CanvasRenderingContext2D, cam: Camera2D, p: Platform, t: number) {
+    const x = cam.sx(p.left);
+    const y = cam.sy(p.top);
+    const w = p.w * cam.scale;
+    const h = p.h * cam.scale;
+    ctx.save();
+    ctx.beginPath();
+    ctx.rect(x, y, w, h);
+    ctx.clip();
+    ctx.fillStyle = rgba(this.theme.accent, 0.05);
+    ctx.fillRect(x, y, w, h);
+    // 流线：沿风向飘动
+    const dir = p.windDir;
+    const ang = Math.atan2(-dir[1], dir[0]); // 屏幕 y 向下
+    ctx.strokeStyle = rgba('#fffcf5', 0.22);
+    ctx.lineWidth = 2;
+    const n = 14;
+    for (let i = 0; i < n; i++) {
+      const seed = i * 41.7;
+      const phase = (t * 40 + seed) % (w + h);
+      const bx = x + ((seed % w) + phase * Math.cos(ang)) % w;
+      const by = y + ((seed * 1.3) % h + phase * Math.sin(ang)) % h;
+      ctx.beginPath();
+      ctx.moveTo(bx, by);
+      ctx.lineTo(bx + Math.cos(ang) * 22, by + Math.sin(ang) * 22);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  // ── 齿轮（中心齿盘 + 公转的齿/踏板）──────────────
+  private drawGear(ctx: CanvasRenderingContext2D, cam: Camera2D, p: Platform) {
+    const cx = cam.sx(p.centerX);
+    const cy = cam.sy(p.centerY);
+    const R = p.orbitRadius * cam.scale;
+    // 齿盘
+    ctx.strokeStyle = rgba(this.theme.platformSide, 0.5);
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.arc(cx, cy, R, 0, Math.PI * 2);
+    ctx.stroke();
+    const teeth = 12;
+    ctx.fillStyle = rgba(this.theme.platformSide, 0.4);
+    for (let i = 0; i < teeth; i++) {
+      const a = (i / teeth) * Math.PI * 2 + p.angle;
+      const tx = cx + Math.cos(a) * R;
+      const ty = cy + Math.sin(a) * R;
+      ctx.beginPath();
+      ctx.arc(tx, ty, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // 中心毂
+    ctx.fillStyle = rgba(this.theme.accent, 0.6);
+    ctx.beginPath();
+    ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+    ctx.fill();
+    // 可站立的踏板（当前位置的实体块）
+    this.drawPlatform(ctx, cam, p);
   }
 
   // ── 星核 ────────────────────────────────────────

@@ -104,4 +104,8 @@ export class HUD {
       this.vignette.style.opacity = String(this.flash);
     }
   }
+
+  dispose() {
+    this.root.remove();
+  }
 }

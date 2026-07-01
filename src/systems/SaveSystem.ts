@@ -1,5 +1,7 @@
+import { parseUnlock } from '../data/maps';
+
 /**
- * localStorage 存读。Phase 1 仅存每张地图的最高点；后续阶段扩展解锁/光点/best time。
+ * localStorage 存读：每张地图的最高点、最佳用时、是否通关，并据此判断解锁。
  */
 export interface MapSave {
   maxHeight: number;
@@ -45,6 +47,14 @@ export class SaveSystem {
 
   getMap(mapId: string): MapSave {
     return this.data.maps[mapId] ?? { maxHeight: 0, bestTimeSec: null, cleared: false };
+  }
+
+  /** 根据解锁条件与存档判断某张图是否已解锁。 */
+  isUnlocked(cond: string | null): boolean {
+    const u = parseUnlock(cond);
+    if (u.type === 'default') return true;
+    if (u.type === 'clear' && u.mapId) return this.getMap(u.mapId).cleared;
+    return true;
   }
 
   /** 记录一次跑图结果，返回是否刷新了最高点。 */

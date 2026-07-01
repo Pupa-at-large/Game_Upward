@@ -1,0 +1,36 @@
+{
+  "id": "inverted-tower",
+  "name": "逆位之塔",
+  "tagline": "颠倒众生，顶点见光。",
+  "theme": {
+    "skyBottom": "#4a3a2c",
+    "skyTop": "#e0b878",
+    "platformTop": "#fbefcf",
+    "platformSide": "#d8a860",
+    "accent": "#ffe0a0",
+    "silhouette": "#5a4834"
+  },
+  "unlockCondition": "clear:celestial-stairs",
+  "segments": [
+    {
+      "id": "seg-1",
+      "name": "崩阶",
+      "startY": 0,
+      "bufferPlatformY": 0,
+      "boundaryY": 32,
+      "platforms": [
+        { "type": "static", "pos": [0, 0], "size": [12, 1] },
+        { "type": "fading", "pos": [-2.4, 3.3], "size": [2, 0.6], "fadeDelay": 0.35, "respawnTime": 2 },
+        { "type": "fading", "pos": [0, 6.6], "size": [2, 0.6], "fadeDelay": 0.35, "respawnTime": 2 },
+        { "type": "fading", "pos": [2.4, 9.9], "size": [2, 0.6], "fadeDelay": 0.35, "respawnTime": 2 },
+        { "type": "bouncer", "pos": [2.4, 13], "size": [2.2, 0.6], "bounceForce": 17 },
+        { "type": "static", "pos": [0, 18], "size": [2.4, 0.6] },
+        { "type": "moving", "pos": [0, 22], "size": [2.2, 0.6], "axis": "x", "range": 6, "speed": 2 },
+        { "type": "fading", "pos": [2, 26], "size": [2, 0.6], "fadeDelay": 0.3, "respawnTime": 2 },
+        { "type": "static", "pos": [0, 30], "size": [3.5, 0.8] }
+      ]
+    }
+  ],
+  "summitY": 30,
+  "starCores": [{ "pos": [-2.4, 3.3] }]
+}

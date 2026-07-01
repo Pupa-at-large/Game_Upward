@@ -35,6 +35,11 @@ export class Platform {
   windDir: [number, number];
   windStrength: number;
 
+  // gear（绕中心公转的平台）
+  private radius: number;
+  private rotSpeed: number;
+  angle = 0;
+
   constructor(def: PlatformDef) {
     this.type = def.type;
     this.x = def.pos[0];
@@ -51,7 +56,14 @@ export class Platform {
     this.bounceForce = def.bounceForce ?? 20;
     this.windDir = def.direction ?? [1, 0];
     this.windStrength = def.strength ?? 8;
+    this.radius = def.radius ?? 3;
+    this.rotSpeed = def.rotSpeed ?? 1;
   }
+
+  /** gear/wind 母题的中心（原始位置），供渲染画齿盘/风场。 */
+  get centerX() { return this.ox; }
+  get centerY() { return this.oy; }
+  get orbitRadius() { return this.radius; }
 
   get left() { return this.x - this.w / 2; }
   get right() { return this.x + this.w / 2; }
@@ -75,6 +87,15 @@ export class Platform {
       const offset = Math.sin(t * this.speed) * (this.range / 2);
       if (this.axis === 'x') this.x = this.ox + offset;
       else this.y = this.oy + offset;
+      this.dx = this.x - px;
+      this.dy = this.y - py;
+    } else if (this.type === 'gear') {
+      // 绕中心公转：站在齿上的玩家被 dx/dy 带着转
+      const px = this.x;
+      const py = this.y;
+      this.angle = t * this.rotSpeed;
+      this.x = this.ox + Math.cos(this.angle) * this.radius;
+      this.y = this.oy + Math.sin(this.angle) * this.radius;
       this.dx = this.x - px;
       this.dy = this.y - py;
     } else {
@@ -128,6 +149,15 @@ export class World {
 
   get summitY() { return this.def.summitY; }
   get segments() { return this.def.segments; }
+
+  /** 最高平台的顶面高度（登顶判定用，与 summitY 显示值解耦）。 */
+  get topPlatformY(): number {
+    let top = 0;
+    for (const seg of this.def.segments) {
+      for (const p of seg.platforms) top = Math.max(top, p.pos[1] + p.size[1] / 2);
+    }
+    return top;
+  }
 
   /** 出生点：第一块平台顶面正上方。 */
   get spawn(): { x: number; y: number } {

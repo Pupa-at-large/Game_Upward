@@ -1,0 +1,54 @@
+{
+  "id": "living-realm",
+  "name": "生活国度",
+  "tagline": "平凡之物，皆可为阶。",
+  "theme": {
+    "skyBottom": "#303a40",
+    "skyTop": "#7e9a94",
+    "platformTop": "#d8d2c2",
+    "platformSide": "#a39c86",
+    "accent": "#e8b86d",
+    "silhouette": "#3e4a44"
+  },
+  "unlockCondition": "clear:misty-tower",
+  "segments": [
+    {
+      "id": "seg-1",
+      "name": "书阶",
+      "startY": 0,
+      "bufferPlatformY": 0,
+      "boundaryY": 30,
+      "platforms": [
+        { "type": "static", "pos": [0, 0], "size": [12, 1] },
+        { "type": "static", "pos": [-2.5, 3.2], "size": [2.6, 0.6] },
+        { "type": "static", "pos": [-0.3, 6.4], "size": [2.4, 0.6] },
+        { "type": "bouncer", "pos": [-0.3, 9.4], "size": [2.6, 0.6], "bounceForce": 16 },
+        { "type": "static", "pos": [-0.3, 14], "size": [2.8, 0.6] },
+        { "type": "static", "pos": [2.6, 17.2], "size": [2.2, 0.6] },
+        { "type": "moving", "pos": [0, 21], "size": [2.4, 0.6], "axis": "x", "range": 5, "speed": 1.3 },
+        { "type": "fading", "pos": [2.6, 24.6], "size": [2.2, 0.6], "fadeDelay": 0.5, "respawnTime": 2.5 },
+        { "type": "static", "pos": [0.4, 28], "size": [3, 0.6] }
+      ]
+    },
+    {
+      "id": "seg-2",
+      "name": "灯与幔",
+      "startY": 30,
+      "bufferPlatformY": 30,
+      "boundaryY": 62,
+      "platforms": [
+        { "type": "static", "pos": [0.4, 30], "size": [5, 1] },
+        { "type": "static", "pos": [-2.4, 33.4], "size": [2.2, 0.6] },
+        { "type": "fading", "pos": [-0.2, 36.8], "size": [2.2, 0.6], "fadeDelay": 0.5, "respawnTime": 2.5 },
+        { "type": "bouncer", "pos": [-0.2, 39.6], "size": [2.4, 0.6], "bounceForce": 17 },
+        { "type": "static", "pos": [-0.2, 45], "size": [2.6, 0.6] },
+        { "type": "moving", "pos": [1.5, 48.6], "size": [2.2, 0.6], "axis": "x", "range": 5.5, "speed": 1.6 },
+        { "type": "fading", "pos": [-1.6, 52.4], "size": [2.2, 0.6], "fadeDelay": 0.45, "respawnTime": 2.5 },
+        { "type": "static", "pos": [1, 56], "size": [2.4, 0.6] },
+        { "type": "static", "pos": [0, 60], "size": [4, 0.8] }
+      ]
+    }
+  ],
+  "summitY": 60,
+  "starCores": [{ "pos": [3, 17] }, { "pos": [-2, 45] }]
+}

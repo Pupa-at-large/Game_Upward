@@ -1,0 +1,53 @@
+{
+  "id": "cloud-gears",
+  "name": "云海齿轮",
+  "tagline": "锈蚀的齿轮，仍向高处转。",
+  "theme": {
+    "skyBottom": "#3a3630",
+    "skyTop": "#a89170",
+    "platformTop": "#e0d2b8",
+    "platformSide": "#b39a76",
+    "accent": "#f2c49b",
+    "silhouette": "#4a4030"
+  },
+  "unlockCondition": "clear:living-realm",
+  "segments": [
+    {
+      "id": "seg-1",
+      "name": "齿盘",
+      "startY": 0,
+      "bufferPlatformY": 0,
+      "boundaryY": 30,
+      "platforms": [
+        { "type": "static", "pos": [0, 0], "size": [12, 1] },
+        { "type": "static", "pos": [-2.5, 3.4], "size": [2.4, 0.6] },
+        { "type": "gear", "pos": [1, 8], "size": [2, 0.6], "radius": 2.6, "rotSpeed": 0.9 },
+        { "type": "static", "pos": [3, 13], "size": [2.2, 0.6] },
+        { "type": "wind", "pos": [0.5, 17.5], "size": [5, 3], "direction": [-1, 0], "strength": 10 },
+        { "type": "static", "pos": [-2.6, 20], "size": [2.4, 0.6] },
+        { "type": "moving", "pos": [0.5, 24], "size": [2.4, 0.6], "axis": "x", "range": 5, "speed": 1.4 },
+        { "type": "static", "pos": [2.6, 28], "size": [2.6, 0.6] }
+      ]
+    },
+    {
+      "id": "seg-2",
+      "name": "御风",
+      "startY": 30,
+      "bufferPlatformY": 30,
+      "boundaryY": 62,
+      "platforms": [
+        { "type": "static", "pos": [2.6, 30], "size": [5, 1] },
+        { "type": "static", "pos": [-0.5, 33.4], "size": [2.2, 0.6] },
+        { "type": "gear", "pos": [-2, 38], "size": [2, 0.6], "radius": 2.4, "rotSpeed": -1 },
+        { "type": "static", "pos": [1.5, 42], "size": [2.2, 0.6] },
+        { "type": "wind", "pos": [1.5, 46.5], "size": [4.5, 3], "direction": [1, 0.2], "strength": 11 },
+        { "type": "static", "pos": [3.4, 49], "size": [2.2, 0.6] },
+        { "type": "moving", "pos": [0.5, 53], "size": [2.2, 0.6], "axis": "x", "range": 6, "speed": 1.7 },
+        { "type": "static", "pos": [-2, 57], "size": [2.4, 0.6] },
+        { "type": "static", "pos": [0, 61], "size": [4, 0.8] }
+      ]
+    }
+  ],
+  "summitY": 61,
+  "starCores": [{ "pos": [3, 13] }, { "pos": [1.5, 42] }]
+}
